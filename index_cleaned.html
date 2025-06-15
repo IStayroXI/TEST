@@ -1,0 +1,3633 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Animés - Collection Enhanced &amp; Complete</title>
+<style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-card: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --accent: #ff6b6b;
+            --accent-hover: #ff5252;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: var(--gradient);
+            padding: 2rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: float 20s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .genre-section {
+            margin: 3rem 0;
+            padding: 0 2rem;
+        }
+
+        .genre-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .genre-title {
+            font-size: 2rem;
+            font-weight: 600;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .genre-count {
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 1.5rem;
+            padding: 1rem 0 2rem 0;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) transparent;
+        }
+
+        .carousel::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .carousel::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+
+        .carousel::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        .anime-card {
+            flex: 0 0 280px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scroll-snap-align: start;
+            cursor: pointer;
+            position: relative;
+            border: 2px solid transparent;
+            /* For zoom feature addition */
+            will-change: transform;
+        }
+
+        .anime-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(255, 107, 107, 0.2);
+            z-index: 10;
+        }
+
+        .anime-card.viewed {
+            opacity: 0.6;
+            border-color: var(--success);
+        }
+
+        .anime-card.viewed::after {
+            content: '✓';
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--success);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            z-index: 11;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .anime-poster {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+            border-radius: 16px 16px 0 0;
+            user-select: none;
+        }
+
+        .anime-card:hover .anime-poster {
+            transform: scale(1.05);
+        }
+
+        .anime-info {
+            padding: 1.5rem;
+        }
+
+        .anime-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            line-height: 1.3;
+            user-select: text;
+        }
+
+        .anime-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            user-select: text;
+        }
+
+        .anime-genres {
+            display: inline-block;
+            background: var(--gradient);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .voir-plus-container {
+            text-align: right;
+            margin-top: 1rem;
+        }
+
+        .voir-plus {
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .voir-plus:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .modal-fullscreen {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: color 0.3s ease;
+            user-select: none;
+        }
+
+        .close:hover {
+            color: var(--accent);
+        }
+
+        .modal-title {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            user-select: text;
+        }
+
+        .carousel-mini {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            padding-bottom: 1rem;
+        }
+
+        .carousel-mini img {
+            height: 200px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+
+        .carousel-mini img:hover {
+            transform: scale(1.05);
+        }
+
+        .resume {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+            color: var(--text-secondary);
+            user-select: text;
+        }
+
+        .rating {
+            margin: 2rem 0;
+            text-align: center;
+            user-select: none;
+        }
+
+        .rating span {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #444;
+            transition: all 0.2s ease;
+            margin: 0 0.2rem;
+            user-select: none;
+            text-shadow: 0 0 2px #000;
+        }
+
+        .rating span.selected {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .rating span:hover {
+            transform: scale(1.2);
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+
+        .watch-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .watch-link a {
+            background: var(--gradient);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            user-select: none;
+        }
+
+        .watch-link a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .genre-section {
+                padding: 0 1rem;
+            }
+
+            .anime-card {
+                flex: 0 0 220px;
+            }
+
+            .modal-fullscreen {
+                margin: 1rem;
+                padding: 1.5rem;
+                max-height: 85vh;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    
+@media (max-width: 600px) {
+    .anime-card {
+        flex: 0 0 90vw;
+    }
+
+    .anime-info {
+        padding: 1rem;
+    }
+
+    .anime-poster {
+        height: 200px;
+    }
+
+    .modal-title {
+        font-size: 1.8rem;
+    }
+
+    .carousel-mini img {
+        height: 140px;
+    }
+
+    .watch-link a {
+        padding: 0.8rem 1.2rem;
+        font-size: 1rem;
+    }
+
+    .rating span:hover {
+        transform: none;
+        color: inherit;
+        text-shadow: none;
+    }
+
+    .rating-hint-mobile {
+        font-size: 0.8rem;
+        color: var(--text-muted, #999);
+        margin-top: -1rem;
+        display: block;
+        text-align: center;
+    }
+}
+.rating-hint-mobile {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .modal-fullscreen {
+        width: 95vw;
+        height: 95vh;
+        padding: 1rem;
+        overflow-y: auto;
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .resume {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .carousel-mini {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .carousel-mini img {
+        width: 90%;
+        max-width: 300px;
+        height: auto;
+    }
+
+    .watch-link {
+        text-align: center;
+    }
+
+    .watch-link a {
+        display: inline-block;
+        padding: 0.6rem 1rem;
+        font-size: 1rem;
+    }
+
+    .close {
+        top: 10px;
+        right: 10px;
+        font-size: 1.8rem;
+    }
+}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>Collection Animé Premium</h1>
+</div>
+<div class="stats">
+<div class="stat-card">
+<div class="stat-number" id="totalAnimes">0</div>
+<div>Animés Total</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="viewedAnimes">0</div>
+<div>Vus</div>
+</div>
+<div class="stat-card">
+<div class="stat-number" id="ratedAnimes">0</div>
+<div>Notés</div>
+</div>
+</div>
+<!-- Genre Section: Science-Fiction -->
+<div class="genre-section fade-in">
+<div class="genre-header">
+<h2 class="genre-title">Science-Fiction</h2>
+<span class="genre-count">5</span>
+</div>
+<div class="carousel">
+<div class="anime-card" data-title="Steins;Gate" onclick="toggleViewed(this)">
+<img alt="Steins;Gate" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/2lyrdq.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Steins;Gate</div>
+<div class="anime-desc">Un thriller temporel mêlant science et émotion dans une histoire captivante.</div>
+<div class="anime-genres">Science-Fiction • Thriller</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Steins;Gate">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Psycho-Pass" onclick="toggleViewed(this)">
+<img alt="Psycho-Pass" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/27o83f.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Psycho-Pass</div>
+<div class="anime-desc">Une société futuriste régie par un système de justice prédictive.</div>
+<div class="anime-genres">Science-Fiction • Action</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="PsychoPass">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Planetes" onclick="toggleViewed(this)">
+<img alt="Planetes" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/w703c1.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Planetes</div>
+<div class="anime-desc">La vie d'éboueurs de l'espace au XXIe siècle, une vision réaliste du futur.</div>
+<div class="anime-genres">Science-Fiction • Drame</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Planetes">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Noein" onclick="toggleViewed(this)">
+<img alt="Noein" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/7i7vft.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Noein</div>
+<div class="anime-desc">Une guerre entre dimensions menace l'univers et ses habitants.</div>
+<div class="anime-genres">Science-Fiction • Aventure</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Noein">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Dennou Coil" onclick="toggleViewed(this)">
+<img alt="Dennou Coil" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/l0aty1.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Dennou Coil</div>
+<div class="anime-desc">Entre réalité augmentée et enquête enfantine dans un monde connecté.</div>
+<div class="anime-genres">Science-Fiction • Mystère</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Dennou Coil">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- SECTION : Science-Fiction (ajouts) -->
+<!-- =============================== -->
+<!-- On ajoute ici les animés Science-Fiction absents de la section -->
+<!-- Ajouts : Akudama Drive, Dr. Stone, Heavenly Delusion -->
+
+<!-- Akudama Drive -->
+<div class="anime-card" data-title="Akudama Drive" onclick="toggleViewed(this)">
+    <img alt="Akudama Drive" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_ad.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">Akudama Drive</div>
+      <div class="anime-desc">Dans un Japon dystopique, des criminels d'élite appelés Akudama reçoivent une mission qui va bouleverser le destin du pays.</div>
+      <div class="anime-genres">Science-Fiction</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="AkudamaDrive">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Dr. Stone -->
+  <div class="anime-card" data-title="Dr. Stone" onclick="toggleViewed(this)">
+    <img alt="Dr. Stone" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_ds.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">Dr. Stone</div>
+      <div class="anime-desc">Des milliers d'années après la pétrification de l'humanité, un jeune génie scientifique tente de reconstruire la civilisation grâce à la science.</div>
+      <div class="anime-genres">Adventure • Science-Fiction</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="DrStone">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Heavenly Delusion -->
+  <div class="anime-card" data-title="Heavenly Delusion" onclick="toggleViewed(this)">
+    <img alt="Heavenly Delusion" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_hd.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">Heavenly Delusion</div>
+      <div class="anime-desc">Dans un futur ravagé, deux jeunes explorent un monde dévasté en quête du « paradis », tandis que d'autres vivent enfermés dans un mystérieux établissement.</div>
+      <div class="anime-genres">Adventure • Mystery • Science-Fiction</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="HeavenlyDelusion">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>  
+
+</div>
+</div>
+
+<!-- Genre Section: Slice of Life -->
+<div class="genre-section fade-in">
+<div class="genre-header">
+<h2 class="genre-title">Slice of Life</h2>
+<span class="genre-count">5</span>
+</div>
+<div class="carousel">
+<div class="anime-card" data-title="Barakamon" onclick="toggleViewed(this)">
+<img alt="Barakamon" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/efe942.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Barakamon</div>
+<div class="anime-desc">Un calligraphe citadin découvre la vie rurale et ses charmes.</div>
+<div class="anime-genres">Slice of Life • Comédie</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Barakamon">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="March Comes in Like a Lion" onclick="toggleViewed(this)">
+<img alt="March Comes in Like a Lion" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/9yemz7.jpg"/>
+<div class="anime-info">
+<div class="anime-title">March Comes in Like a Lion</div>
+<div class="anime-desc">Un joueur de shōgi lutte contre ses démons intérieurs.</div>
+<div class="anime-genres">Slice of Life • Drame</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="MarchComesInLikeaLion">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Usagi Drop" onclick="toggleViewed(this)">
+<img alt="Usagi Drop" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/8uossa.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Usagi Drop</div>
+<div class="anime-desc">Un homme élève une petite fille abandonnée avec tendresse.</div>
+<div class="anime-genres">Slice of Life • Famille</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="UsagiDrop">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Hyouka" onclick="toggleViewed(this)">
+<img alt="Hyouka" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/1fksqd.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Hyouka</div>
+<div class="anime-desc">Une enquête lycéenne avec une touche de quotidien japonais.</div>
+<div class="anime-genres">Slice of Life • Mystère</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Hyouka">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="The Great Passage" onclick="toggleViewed(this)">
+<img alt="The Great Passage" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/haumh5.jpg"/>
+<div class="anime-info">
+<div class="anime-title">The Great Passage</div>
+<div class="anime-desc">Un groupe conçoit un dictionnaire avec passion et dévouement.</div>
+<div class="anime-genres">Slice of Life • Travail</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="TheGreatPassage">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- SECTION : Slice of Life (ajouts) -->
+<!-- =============================== -->
+<!-- Ajouts : How to Become Ordinary, Blue Archive -->
+
+<!-- How to Become Ordinary -->
+<div class="anime-card" data-title="How to Become Ordinary" onclick="toggleViewed(this)">
+    <img alt="How to Become Ordinary" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_htbo.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">How to Become Ordinary</div>
+      <div class="anime-desc">Une lycéenne cherche à vivre une vie tranquille et banale, mais se retrouve mêlée à des événements inattendus qui bousculent sa routine.</div>
+      <div class="anime-genres">Slice of Life</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="HowToBecomeOrdinary">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Blue Archive -->
+  <div class="anime-card" data-title="Blue Archive" onclick="toggleViewed(this)">
+    <img alt="Blue Archive" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_ba.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">Blue Archive</div>
+      <div class="anime-desc">Des étudiantes armées mènent des enquêtes et missions dans une académie excentrique, mélangeant comédie scolaire et tranches de vie explosives.</div>
+      <div class="anime-genres">Slice of Life • School</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="BlueArchive">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- SECTION : Action (complétée) -->
+<!-- =============================== -->
+<div class="genre-section fade-in">
+    <div class="genre-header">
+      <h2 class="genre-title">Action</h2>
+      <span class="genre-count">4</span>
+    </div>
+    <div class="carousel">
+  
+      <!-- Ragna Crimson -->
+      <div class="anime-card" data-title="Ragna Crimson" onclick="toggleViewed(this)">
+        <img alt="Ragna Crimson" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/placeholder1.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Ragna Crimson</div>
+          <div class="anime-desc">Un chasseur de dragons déchaîne un pouvoir mortel pour défier le destin et protéger ceux qu'il aime.</div>
+          <div class="anime-genres">Action • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="RagnaCrimson">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Akame ga Kill -->
+      <div class="anime-card" data-title="Akame ga Kill" onclick="toggleViewed(this)">
+        <img alt="Akame ga Kill" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/placeholder12.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Akame ga Kill</div>
+          <div class="anime-desc">Un jeune guerrier rejoint un groupe d’assassins rebelles pour combattre la corruption d’un empire tyrannique.</div>
+          <div class="anime-genres">Action • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="AkamegaKill">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- FLCL -->
+      <div class="anime-card" data-title="FLCL" onclick="toggleViewed(this)">
+        <img alt="FLCL" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/placeholder13.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">FLCL</div>
+          <div class="anime-desc">Naota voit sa vie bouleversée par l’arrivée d’une fille à moto qui provoque des événements surnaturels et absurdes.</div>
+          <div class="anime-genres">Action • Supernatural</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="FLCL">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- UQ Holder! -->
+      <div class="anime-card" data-title="UQ Holder!" onclick="toggleViewed(this)">
+        <img alt="UQ Holder!" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/placeholder14.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">UQ Holder!</div>
+          <div class="anime-desc">Après avoir été transformé en vampire, un jeune garçon rejoint une organisation secrète de combattants immortels.</div>
+          <div class="anime-genres">Action • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="UQHolder">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  
+
+<!-- Genre Section: Fantasy -->
+<div class="genre-section fade-in">
+<div class="genre-header">
+<h2 class="genre-title">Fantasy</h2>
+<span class="genre-count">5</span>
+</div>
+<div class="carousel">
+<div class="anime-card" data-title="Made in Abyss" onclick="toggleViewed(this)">
+<img alt="Made in Abyss" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/e1apjy.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Made in Abyss</div>
+<div class="anime-desc">Une exploration périlleuse d'un gouffre mystérieux.</div>
+<div class="anime-genres">Fantasy • Aventure</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="MadeInAbyss">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="The Ancient Magus’ Bride" onclick="toggleViewed(this)">
+<img alt="The Ancient Magus’ Bride" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/lwtyrp.jpg"/>
+<div class="anime-info">
+<div class="anime-title">The Ancient Magus’ Bride</div>
+<div class="anime-desc">Une jeune fille vendue devient l'apprentie d'un magicien.</div>
+<div class="anime-genres">Fantasy • Romance</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="TheAncientMagusBride">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Fena: Pirate Princess" onclick="toggleViewed(this)">
+<img alt="Fena: Pirate Princess" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/cpt99r.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Fena: Pirate Princess</div>
+<div class="anime-desc">Une orpheline se lance dans une aventure en mer.</div>
+<div class="anime-genres">Fantasy • Action</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="FenaPiratePrincess">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Grimgar, Ashes and Illusions" onclick="toggleViewed(this)">
+<img alt="Grimgar, Ashes and Illusions" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/jh22lb.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Grimgar, Ashes and Illusions</div>
+<div class="anime-desc">Des étrangers amnésiques luttent dans un monde hostile.</div>
+<div class="anime-genres">Fantasy • Drame</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="GrimgarAshesAndIllusions">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- ==================================== -->
+<!-- ANIME 1 : Ragna Crimson - Action / Fantasy -->
+<!-- ==================================== -->
+<!-- À insérer dans la section Fantasy (et Action si présente). -->
+<!-- Ajout temporaire dans Fantasy -->
+<div class="anime-card" data-title="Ragna Crimson" onclick="toggleViewed(this)">
+    <img alt="Ragna Crimson" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/placeholder1.jpg"/>
+    <div class="anime-info">
+      <div class="anime-title">Ragna Crimson</div>
+      <div class="anime-desc">Un chasseur de dragons déchaîne un pouvoir mortel pour défier le destin et protéger ceux qu'il aime.</div>
+      <div class="anime-genres">Action • Fantasy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="RagnaCrimson">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+
+<div class="anime-card" data-title="Ascendance of a Bookworm" onclick="toggleViewed(this)">
+<img alt="Ascendance of a Bookworm" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/qg2wex.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Ascendance of a Bookworm</div>
+<div class="anime-desc">Une passionnée de livres renaît dans un monde médiéval.</div>
+<div class="anime-genres">Fantasy • Isekai</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="AscendanceOfABookworm">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- SECTION : Fantasy (ajouts) -->
+<!-- =============================== -->
+<!-- Ajouts : Princess Connect! Re:Dive, The Case Study of Vanitas, No Game No Life, The Devil Is a Part-Timer, Plunderer -->
+
+<!-- Princess Connect! Re:Dive -->
+<div class="anime-card" data-title="Princess Connect" onclick="toggleViewed(this)">
+    <img alt="Princess Connect! Re:Dive" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_pc.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">Princess Connect! Re:Dive</div>
+      <div class="anime-desc">Un jeune homme amnésique se réveille dans un monde fantastique et se lie avec un groupe de filles excentriques pour former une guilde.</div>
+      <div class="anime-genres">Fantasy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="PrincessConnect">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- The Case Study of Vanitas -->
+  <div class="anime-card" data-title="The Case Study of Vanitas" onclick="toggleViewed(this)">
+    <img alt="The Case Study of Vanitas" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_vanitas.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">The Case Study of Vanitas</div>
+      <div class="anime-desc">À Paris, un jeune homme rencontre un docteur utilisant un mystérieux grimoire pour sauver les vampires de leur malédiction.</div>
+      <div class="anime-genres">Fantasy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Vanitas">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- No Game No Life -->
+  <div class="anime-card" data-title="No Game No Life" onclick="toggleViewed(this)">
+    <img alt="No Game No Life" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_ngnl.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">No Game No Life</div>
+      <div class="anime-desc">Un duo de gamers surdoués est transporté dans un monde où tous les conflits se résolvent par des jeux.</div>
+      <div class="anime-genres">Fantasy • Isekai</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="NoGameNoLife">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- The Devil Is a Part-Timer -->
+  <div class="anime-card" data-title="The Devil Is a Part-Timer" onclick="toggleViewed(this)">
+    <img alt="The Devil Is a Part-Timer" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_dpt.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">The Devil Is a Part-Timer</div>
+      <div class="anime-desc">Le roi démon est transporté dans notre monde et doit trouver un emploi à temps partiel pour survivre.</div>
+      <div class="anime-genres">Fantasy • Comedy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="DevilPartTimer">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Plunderer -->
+  <div class="anime-card" data-title="Plunderer" onclick="toggleViewed(this)">
+    <img alt="Plunderer" class="anime-poster" loading="lazy"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+      src="https://files.catbox.moe/placeholder_pl.jpg" />
+    <div class="anime-info">
+      <div class="anime-title">Plunderer</div>
+      <div class="anime-desc">Dans un monde où les gens sont jugés par des compteurs chiffrés, une jeune fille cherche un héros légendaire pour sauver sa mère.</div>
+      <div class="anime-genres">Fantasy • Action</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Plunderer">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+
+</div>
+</div>
+<!-- Genre Section: Psychological -->
+<div class="genre-section fade-in">
+<div class="genre-header">
+<h2 class="genre-title">Psychological</h2>
+<span class="genre-count">5</span>
+</div>
+<div class="carousel">
+<div class="anime-card" data-title="Paranoia Agent" onclick="toggleViewed(this)">
+<img alt="Paranoia Agent" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/pu6iea.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Paranoia Agent</div>
+<div class="anime-desc">Un garçon à la batte attaque des gens dans Tokyo.</div>
+<div class="anime-genres">Psychologique • Mystère</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="ParanoiaAgent">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<div class="anime-card" data-title="Serial Experiments Lain" onclick="toggleViewed(this)">
+<img alt="Serial Experiments Lain" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/37o67i.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Serial Experiments Lain</div>
+<div class="anime-desc">Une fille s'enfonce dans un monde entre réalité et réseau.</div>
+<div class="anime-genres">Psychologique • Cyberpunk</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="SerialExperimentsLain">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Kaiba" onclick="toggleViewed(this)">
+<img alt="Kaiba" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ngee43.webp"/>
+<div class="anime-info">
+<div class="anime-title">Kaiba</div>
+<div class="anime-desc">Un monde où la mémoire peut être transférée entre corps.</div>
+<div class="anime-genres">Psychologique • Science-Fiction</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Kaiba">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Texhnolyze" onclick="toggleViewed(this)">
+<img alt="Texhnolyze" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/kditca.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Texhnolyze</div>
+<div class="anime-desc">Une société en ruines où règnent les implants cybernétiques.</div>
+<div class="anime-genres">Psychologique • Drame</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Texhnolyze">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Welcome to the NHK" onclick="toggleViewed(this)">
+<img alt="Welcome to the NHK" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/d3yox9.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Welcome to the NHK</div>
+<div class="anime-desc">Un hikikomori paranoïaque pense qu'une conspiration l'observe.</div>
+<div class="anime-genres">Psychologique • Drame</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="WelcomeToTheNHK">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- SECTION : Psychological (ajouts) -->
+<!-- =============================== -->
+<!-- Ajouts : Death Mount Play Dead, Terror in Resonance, Death Parade, Wonder Egg Priority -->
+
+<!-- Death Mount Play Dead -->
+<div class="anime-card" data-title="Death Mount Play Dead" onclick="toggleViewed(this)">
+    <img alt="Death Mount Play Dead" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_dmpd.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" />
+    <div class="anime-info">
+      <div class="anime-title">Death Mount Play Dead</div>
+      <div class="anime-desc">Un puissant nécromancien est réincarné dans le corps d’un adolescent dans un monde moderne, poursuivi par des forces mystérieuses.</div>
+      <div class="anime-genres">Psychological • Supernatural</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="DeathMountPlayDead">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Terror in Resonance -->
+  <div class="anime-card" data-title="Terror in Resonance" onclick="toggleViewed(this)">
+    <img alt="Terror in Resonance" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_tir.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" />
+    <div class="anime-info">
+      <div class="anime-title">Terror in Resonance</div>
+      <div class="anime-desc">Deux adolescents posent des bombes à Tokyo tout en lançant des énigmes à la police. Qui sont-ils et que cherchent-ils à prouver ?</div>
+      <div class="anime-genres">Psychological • Thriller</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="TerrorInResonance">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Death Parade -->
+  <div class="anime-card" data-title="Death Parade" onclick="toggleViewed(this)">
+    <img alt="Death Parade" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_dp.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" />
+    <div class="anime-info">
+      <div class="anime-title">Death Parade</div>
+      <div class="anime-desc">Deux âmes arrivent dans un bar après la mort. Elles doivent jouer à un jeu mortel pour que leur sort éternel soit décidé.</div>
+      <div class="anime-genres">Psychological • Drama</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="DeathParade">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Wonder Egg Priority -->
+  <div class="anime-card" data-title="Wonder Egg Priority" onclick="toggleViewed(this)">
+    <img alt="Wonder Egg Priority" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_wep.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" />
+    <div class="anime-info">
+      <div class="anime-title">Wonder Egg Priority</div>
+      <div class="anime-desc">Une adolescente entre dans un monde onirique pour sauver des filles victimes de traumatismes. Un univers poignant et mystérieux.</div>
+      <div class="anime-genres">Psychological • Fantasy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="WonderEggPriority">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+<!-- Genre Section: Romance -->
+<div class="genre-section fade-in">
+<div class="genre-header">
+<h2 class="genre-title">Romance</h2>
+<span class="genre-count">5</span>
+</div>
+<div class="carousel">
+<div class="anime-card" data-title="Fruits Basket" onclick="toggleViewed(this)">
+<img alt="Fruits Basket" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/3a9xmr.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Fruits Basket</div>
+<div class="anime-desc">Une lycéenne vit avec une famille maudite liée au zodiaque.</div>
+<div class="anime-genres">Romance • Surnaturel</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="FruitsBasket">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Kaguya-sama: Love is War" onclick="toggleViewed(this)">
+<img alt="Kaguya-sama: Love is War" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/eb60dm.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Kaguya-sama: Love is War</div>
+<div class="anime-desc">Deux étudiants géniaux refusent d'avouer leur amour.</div>
+<div class="anime-genres">Romance • Comédie</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="KaguyaSamaLoveIsWar">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- ==================================== -->
+<!-- ANIME 2 : Shiunjikenokodomotachi - Romance -->
+<!-- ==================================== -->
+<!-- À insérer dans la section Romance -->
+<div class="anime-card" data-title="Shiunjikenokodomotachi" onclick="toggleViewed(this)">
+    <img alt="Shiunjikenokodomotachi" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/placeholder5.jpg"/>
+    <div class="anime-info">
+      <div class="anime-title">Shiunjikenokodomotachi</div>
+      <div class="anime-desc">Une romance touchante entre des lycéens confrontés à un secret du passé qui les relie.</div>
+      <div class="anime-genres">Romance</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Shiunjikenokodomotachi">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+
+<div class="anime-card" data-title="Bloom Into You" onclick="toggleViewed(this)">
+<img alt="Bloom Into You" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/9vof9b.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Bloom Into You</div>
+<div class="anime-desc">Deux lycéennes explorent leur attirance réciproque.</div>
+<div class="anime-genres">Romance • Yuri</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="BloomIntoYou">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Tsuki ga Kirei" onclick="toggleViewed(this)">
+<img alt="Tsuki ga Kirei" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/inso4y.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Tsuki ga Kirei</div>
+<div class="anime-desc">Deux collégiens timides découvrent l'amour.</div>
+<div class="anime-genres">Romance • Slice of Life</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="TsukiGaKirei">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Chihayafuru" onclick="toggleViewed(this)">
+<img alt="Chihayafuru" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/94c09u.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Chihayafuru</div>
+<div class="anime-desc">Une passionnée de karuta rêve de devenir la meilleure.</div>
+<div class="anime-genres">Romance • Compétition</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Chihayafuru">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- SECTION : Romance (complète) -->
+<!-- =============================== -->
+  
+  <!-- Wotakoi -->
+  <div class="anime-card" data-title="Wotakoi" onclick="toggleViewed(this)">
+    <img alt="Wotakoi" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_wotakoi.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Wotakoi: Love Is Hard for Otaku</div>
+      <div class="anime-desc">Deux collègues otaku commencent à sortir ensemble tout en cachant leur passion geek au reste du bureau.</div>
+      <div class="anime-genres">Romance • Slice of Life</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Wotakoi">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Honey Lemon Soda -->
+  <div class="anime-card" data-title="HoneyLemonSoda" onclick="toggleViewed(this)">
+    <img alt="Honey Lemon Soda" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_hls.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Honey Lemon Soda</div>
+      <div class="anime-desc">Une fille timide découvre la douceur de la vie au lycée après sa rencontre avec un garçon à l’aura pétillante.</div>
+      <div class="anime-genres">Romance</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="HoneyLemonSoda">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Oresuki -->
+  <div class="anime-card" data-title="Oresuki" onclick="toggleViewed(this)">
+    <img alt="Oresuki" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_oresuki.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Oresuki</div>
+      <div class="anime-desc">Un lycéen reçoit des aveux inattendus et se retrouve piégé dans un triangle amoureux loufoque.</div>
+      <div class="anime-genres">Romance • Comédie</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Oresuki">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Oreshura -->
+  <div class="anime-card" data-title="Oreshura" onclick="toggleViewed(this)">
+    <img alt="Oreshura" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_oreshura.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Oreshura</div>
+      <div class="anime-desc">Un étudiant cynique sur l’amour se retrouve entraîné dans une relation factice avec une fille populaire.</div>
+      <div class="anime-genres">Romance</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Oreshura">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Les autres suivront à ce format -->
+  
+  <!-- Ajouts restants pour Romance : Higehiro, Engage Kiss, Summer Pockets, Kimi ga Shinunda Made Koi wo Shitai, I'm in Love with the Villainess, Love to Lie Angle, Trying the Knot with an Amagami Sister, Sakurazou no Pet na Kanojo -->
+
+<!-- Higehiro -->
+<div class="anime-card" data-title="Higehiro" onclick="toggleViewed(this)">
+    <img alt="Higehiro" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_higehiro.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Higehiro</div>
+      <div class="anime-desc">Un salaryman héberge une lycéenne fugueuse. Leur quotidien calme évolue doucement dans une relation humaine et sincère.</div>
+      <div class="anime-genres">Romance • Slice of Life</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Higehiro">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Engage Kiss -->
+  <div class="anime-card" data-title="Engage Kiss" onclick="toggleViewed(this)">
+    <img alt="Engage Kiss" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_engagekiss.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Engage Kiss</div>
+      <div class="anime-desc">Dans une ville dominée par les démons, un chasseur excentrique tente de survivre entre son ex et une démone amoureuse de lui.</div>
+      <div class="anime-genres">Romance • Action • Fantasy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="EngageKiss">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Summer Pockets -->
+  <div class="anime-card" data-title="SummerPockets" onclick="toggleViewed(this)">
+    <img alt="Summer Pockets" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_sp.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Summer Pockets</div>
+      <div class="anime-desc">Un garçon revient sur l’île de son enfance pour l’été, y redécouvrant des souvenirs, des rencontres et de nouvelles émotions.</div>
+      <div class="anime-genres">Romance • Drama</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="SummerPockets">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Kimi ga Shinunda Made Koi wo Shitai -->
+  <div class="anime-card" data-title="KimiShinuKoi" onclick="toggleViewed(this)">
+    <img alt="Kimi ga Shinunda Made Koi wo Shitai" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_ksk.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Kimi ga Shinunda Made Koi wo Shitai</div>
+      <div class="anime-desc">Une romance tragique entre deux filles liées par un destin mortel dans un univers d'assassinats et de sentiments refoulés.</div>
+      <div class="anime-genres">Romance • Yuri</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="KimiShinuKoi">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- I'm in Love with the Villainess -->
+  <div class="anime-card" data-title="VillainessLove" onclick="toggleViewed(this)">
+    <img alt="I'm in Love with the Villainess" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_villainess.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">I'm in Love with the Villainess</div>
+      <div class="anime-desc">Réincarnée dans un jeu otome, une fille déclare sa flamme à l’antagoniste : la princesse la plus redoutée de l'académie magique.</div>
+      <div class="anime-genres">Romance • Yuri • Fantasy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="VillainessLove">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Love to Lie Angle -->
+  <div class="anime-card" data-title="LoveToLieAngle" onclick="toggleViewed(this)">
+    <img alt="Love to Lie Angle" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_llt.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Love to Lie Angle</div>
+      <div class="anime-desc">Nouvelle en résidence universitaire, Natsuno découvre que ses colocataires sont toutes plus envahissantes... et attirantes que prévu.</div>
+      <div class="anime-genres">Romance • Yuri • Comedy</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="LoveToLieAngle">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+<!-- =============================== -->
+<!-- SECTION : Romance (Yuri) -->
+<!-- =============================== -->
+<!-- Ajouts : Citrus, Sakura Trick -->
+
+<!-- Citrus -->
+<div class="anime-card" data-title="Citrus" onclick="toggleViewed(this)">
+    <img alt="Citrus" class="anime-poster" loading="lazy" src="https://files.catbox.moe/citrus_poster.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Citrus</div>
+      <div class="anime-desc">Yuzu emménage dans un nouveau lycée de filles et découvre que sa nouvelle demi-sœur est aussi sa présidente autoritaire… et séduisante.</div>
+      <div class="anime-genres">Romance • Yuri • School</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Citrus">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sakura Trick -->
+  <div class="anime-card" data-title="SakuraTrick" onclick="toggleViewed(this)">
+    <img alt="Sakura Trick" class="anime-poster" loading="lazy" src="https://files.catbox.moe/sakutrick_poster.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Sakura Trick</div>
+      <div class="anime-desc">Deux amies d’enfance se rapprochent intimement après un baiser impulsif. Leur quotidien scolaire prend une tournure romantique et secrète.</div>
+      <div class="anime-genres">Romance • Yuri • Slice of Life</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="SakuraTrick">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Trying the Knot with an Amagami Sister -->
+  <div class="anime-card" data-title="AmagamiSister" onclick="toggleViewed(this)">
+    <img alt="Trying the Knot with an Amagami Sister" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_amagami.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Trying the Knot with an Amagami Sister</div>
+      <div class="anime-desc">Un orphelin promet à un temple de devenir prêtre. Mais il découvre que l’accord implique aussi... d’épouser l’une des trois sœurs Amagami !</div>
+      <div class="anime-genres">Romance • Harem</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="AmagamiSister">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sakurazou no Pet na Kanojo -->
+  <div class="anime-card" data-title="Sakurazou" onclick="toggleViewed(this)">
+    <img alt="Sakurazou no Pet na Kanojo" class="anime-poster" loading="lazy" src="https://files.catbox.moe/placeholder_sakurasou.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Sakurazou no Pet na Kanojo</div>
+      <div class="anime-desc">Un étudiant sans talent artistique est contraint de s’occuper d’une prodige excentrique, bouleversant sa vie et ses ambitions.</div>
+      <div class="anime-genres">Romance • Slice of Life • School</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="Sakurazou">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+
+</div>
+</div>
+<!-- Genre Section: Mystery -->
+<div class="genre-section fade-in">
+<div class="genre-header">
+<h2 class="genre-title">Mystery</h2>
+<span class="genre-count">5</span>
+</div>
+<div class="carousel">
+<div class="anime-card" data-title="Hyouka" onclick="toggleViewed(this)">
+<img alt="Hyouka" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/1fksqd.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Hyouka</div>
+<div class="anime-desc">Un lycéen apathique résout des mystères avec sa classe.</div>
+<div class="anime-genres">Mystère • Slice of Life</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="Hyouka">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="The Perfect Insider" onclick="toggleViewed(this)">
+<img alt="The Perfect Insider" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/98nbh5.jpg"/>
+<div class="anime-info">
+<div class="anime-title">The Perfect Insider</div>
+<div class="anime-desc">Un huis clos scientifique où un meurtre est commis.</div>
+<div class="anime-genres">Mystère • Thriller</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="ThePerfectInsider">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Zankyou no Terror" onclick="toggleViewed(this)">
+<img alt="Zankyou no Terror" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/hs06kb.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Zankyou no Terror</div>
+<div class="anime-desc">Deux adolescents terroristes masqués défient Tokyo.</div>
+<div class="anime-genres">Mystère • Drame</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="ZankyouNoTerror">➤ Voir plus</span>
+</div>
+</div>
+</div>
+<div class="anime-card" data-title="Un-Go" onclick="toggleViewed(this)">
+<img alt="Un-Go" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ueo0oh.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Un-Go</div>
+<div class="anime-desc">Un détective et son étrange partenaire résolvent des affaires.</div>
+<div class="anime-genres">Mystère • Surnaturel</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="UnGo">➤ Voir plus</span>
+</div>
+</div>
+</div>
+
+<!-- Ajout de Summertime Rendering et Heavenly Delusion -->
+
+<!-- Summertime Rendering -->
+<div class="anime-card" data-title="SummertimeRendering" onclick="toggleViewed(this)">
+    <img alt="Summertime Rendering" class="anime-poster" loading="lazy"
+      src="https://files.catbox.moe/summertime_poster.jpg"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Summertime Rendering</div>
+      <div class="anime-desc">De retour sur son île natale pour l’enterrement d’une amie, Shinpei découvre une réalité terrifiante cachée dans les ombres.</div>
+      <div class="anime-genres">Mystery • Supernatural • Thriller</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="SummertimeRendering">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Heavenly Delusion -->
+  <div class="anime-card" data-title="HeavenlyDelusion" onclick="toggleViewed(this)">
+    <img alt="Heavenly Delusion" class="anime-poster" loading="lazy"
+      src="https://files.catbox.moe/tenken_poster.jpg"
+      onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+    <div class="anime-info">
+      <div class="anime-title">Heavenly Delusion</div>
+      <div class="anime-desc">Dans un monde post-apocalyptique, des jeunes cherchent un paradis supposé, affrontant des dangers mutants et révélations troublantes.</div>
+      <div class="anime-genres">Mystery • Science Fiction • Adventure</div>
+      <div class="voir-plus-container">
+        <span class="voir-plus" data-title="HeavenlyDelusion">➤ Voir plus</span>
+      </div>
+    </div>
+  </div>
+
+<div class="anime-card" data-title="Ghost Hound" onclick="toggleViewed(this)">
+<img alt="Ghost Hound" class="anime-poster" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ktlder.jpg"/>
+<div class="anime-info">
+<div class="anime-title">Ghost Hound</div>
+<div class="anime-desc">Trois garçons explorent l'au-delà pour comprendre leurs traumatismes.</div>
+<div class="anime-genres">Mystère • Surnaturel</div>
+<div class="voir-plus-container">
+<span class="voir-plus" data-title="GhostHound">➤ Voir plus</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SECTION : Isekai (nouvelle) -->
+<div class="genre-section fade-in">
+    <div class="genre-header">
+      <h2 class="genre-title">Isekai</h2>
+      <span class="genre-count">6</span>
+    </div>
+    <div class="carousel">
+
+         <!-- Outbreak Company -->
+    <div class="anime-card" data-title="OutbreakCompany" onclick="toggleViewed(this)">
+        <img alt="Outbreak Company" class="anime-poster" loading="lazy" src="https://files.catbox.moe/outbreakposter.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" />
+        <div class="anime-info">
+          <div class="anime-title">Outbreak Company</div>
+          <div class="anime-desc">Un otaku est envoyé dans un autre monde pour y promouvoir la culture otaku japonaise auprès d’un royaume fantastique.</div>
+          <div class="anime-genres">Isekai • Fantasy • Comedy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="OutbreakCompany">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Problem Children -->
+      <div class="anime-card" data-title="ProblemChildren" onclick="toggleViewed(this)">
+        <img alt="Problem Children" class="anime-poster" loading="lazy" src="https://files.catbox.moe/problemchildren.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" />
+        <div class="anime-info">
+          <div class="anime-title">Problem Children Are Coming From Another World, Aren’t They?</div>
+          <div class="anime-desc">Trois adolescents dotés de pouvoirs psychiques sont invoqués dans un monde fantastique pour aider une communauté à gagner des jeux surnaturels.</div>
+          <div class="anime-genres">Isekai • Action • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="ProblemChildren">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Iceblade Sorcerer -->
+      <div class="anime-card" data-title="IcebladeSorcerer" onclick="toggleViewed(this)">
+        <img alt="Iceblade Sorcerer" class="anime-poster" loading="lazy" src="https://files.catbox.moe/icebladeposter.jpg" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" />
+        <div class="anime-info">
+          <div class="anime-title">The Iceblade Sorcerer Shall Rule the World</div>
+          <div class="anime-desc">Dans une académie magique, un garçon au passé militaire cache son identité de sorcier légendaire tout en se liant à ses camarades.</div>
+          <div class="anime-genres">Isekai • Fantasy • School</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="IcebladeSorcerer">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+  
+      <!-- No Game No Life -->
+      <div class="anime-card" data-title="No Game No Life" onclick="toggleViewed(this)">
+        <img alt="No Game No Life" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/placeholder_ngnl.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">No Game No Life</div>
+          <div class="anime-desc">Un duo de gamers surdoués est transporté dans un monde où tous les conflits se résolvent par des jeux.</div>
+          <div class="anime-genres">Isekai • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="NoGameNoLife">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Ascendance of a Bookworm -->
+      <div class="anime-card" data-title="Ascendance of a Bookworm" onclick="toggleViewed(this)">
+        <img alt="Ascendance of a Bookworm" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/qg2wex.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Ascendance of a Bookworm</div>
+          <div class="anime-desc">Une passionnée de livres renaît dans un monde médiéval.</div>
+          <div class="anime-genres">Isekai • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="AscendanceOfABookworm">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- The Devil Is a Part-Timer -->
+      <div class="anime-card" data-title="The Devil Is a Part-Timer" onclick="toggleViewed(this)">
+        <img alt="The Devil Is a Part-Timer" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/placeholder_dpt.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">The Devil Is a Part-Timer</div>
+          <div class="anime-desc">Le roi démon est transporté dans notre monde et doit trouver un emploi à temps partiel pour survivre.</div>
+          <div class="anime-genres">Isekai • Comedy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="DevilPartTimer">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Jobless Reincarnation -->
+      <div class="anime-card" data-title="Mushoku Tensei" onclick="toggleViewed(this)">
+        <img alt="Mushoku Tensei" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/mushokutensei.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Mushoku Tensei</div>
+          <div class="anime-desc">Un NEET réincarné tente de réussir sa seconde vie dans un monde magique avec toutes ses connaissances antérieures.</div>
+          <div class="anime-genres">Isekai • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="MushokuTensei">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Re:Zero -->
+      <div class="anime-card" data-title="Re:Zero" onclick="toggleViewed(this)">
+        <img alt="Re:Zero" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/rezero.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Re:Zero</div>
+          <div class="anime-desc">Subaru est transporté dans un autre monde et découvre qu’il peut revenir dans le temps après chaque mort.</div>
+          <div class="anime-genres">Isekai • Drame • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="ReZero">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- That Time I Got Reincarnated as a Slime -->
+      <div class="anime-card" data-title="Slime" onclick="toggleViewed(this)">
+        <img alt="That Time I Got Reincarnated as a Slime" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/slime.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Reincarnated as a Slime</div>
+          <div class="anime-desc">Un employé de bureau meurt et renaît en slime avec des pouvoirs exceptionnels dans un nouveau monde fantastique.</div>
+          <div class="anime-genres">Isekai • Action • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="Slime">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  
+<!-- =============================== -->
+<!-- SECTION : Sports -->
+<!-- =============================== -->
+<div class="genre-section fade-in">
+    <div class="genre-header">
+      <h2 class="genre-title">Sports</h2>
+      <span class="genre-count">1</span>
+    </div>
+    <div class="carousel">
+  
+      <!-- Uma Musume -->
+      <div class="anime-card" data-title="UmaMusume" onclick="toggleViewed(this)">
+        <img alt="Uma Musume" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/umamusume_poster.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Uma Musume</div>
+          <div class="anime-desc">Dans un monde où les chevaux de course se réincarnent en filles, ces dernières participent à des compétitions sportives tout en visant la scène musicale.</div>
+          <div class="anime-genres">Sports • Fantastique • Slice of Life</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="UmaMusume">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+
+  <!-- =============================== -->
+<!-- SECTION : Music -->
+<!-- =============================== -->
+<div class="genre-section fade-in">
+    <div class="genre-header">
+      <h2 class="genre-title">Music</h2>
+      <span class="genre-count">1</span>
+    </div>
+    <div class="carousel">
+  
+      <!-- Sound! Euphonium -->
+      <div class="anime-card" data-title="SoundEuphonium" onclick="toggleViewed(this)">
+        <img alt="Sound! Euphonium" class="anime-poster" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';"
+          src="https://files.catbox.moe/eupho_poster.jpg" />
+        <div class="anime-info">
+          <div class="anime-title">Sound! Euphonium</div>
+          <div class="anime-desc">Kumiko rejoint l’harmonie de son lycée et redécouvre sa passion pour la musique en compagnie de camarades talentueuses et ambitieuses.</div>
+          <div class="anime-genres">Music • School • Slice of Life</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="SoundEuphonium">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  
+  <!-- =============================== -->
+<!-- SECTION : Adventure -->
+<!-- =============================== -->
+<div class="genre-section fade-in">
+    <div class="genre-header">
+      <h2 class="genre-title">Adventure</h2>
+      <span class="genre-count">2</span>
+    </div>
+    <div class="carousel">
+  
+      <!-- Wandering Witch: The Journey of Elaina -->
+      <div class="anime-card" data-title="WanderingWitch" onclick="toggleViewed(this)">
+        <img alt="Wandering Witch" class="anime-poster" loading="lazy" src="https://files.catbox.moe/elaina_poster.jpg"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+        <div class="anime-info">
+          <div class="anime-title">Wandering Witch: The Journey of Elaina</div>
+          <div class="anime-desc">Suivez les voyages d'Elaina, une jeune sorcière curieuse, à travers un monde plein de merveilles, d’histoires touchantes et de rencontres insolites.</div>
+          <div class="anime-genres">Adventure • Fantasy</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="WanderingWitch">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Dr. Stone -->
+      <div class="anime-card" data-title="DrStone" onclick="toggleViewed(this)">
+        <img alt="Dr. Stone" class="anime-poster" loading="lazy" src="https://files.catbox.moe/drstone_poster.jpg"
+          onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';">
+        <div class="anime-info">
+          <div class="anime-title">Dr. Stone</div>
+          <div class="anime-desc">Après un cataclysme pétrifiant l’humanité, Senku, un génie scientifique, se réveille des millénaires plus tard et tente de reconstruire la civilisation.</div>
+          <div class="anime-genres">Adventure • Science Fiction</div>
+          <div class="voir-plus-container">
+            <span class="voir-plus" data-title="DrStone">➤ Voir plus</span>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  
+
+<!-- Modals -->
+<!-- Steins;Gate Modal -->
+<div class="modal-overlay" id="modal-Steins;Gate">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Steins;Gate</h2>
+<div class="carousel-mini">
+<img alt="Scene 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/o0aw83.avif"/>
+<img alt="Scene 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/udmovr.jpg"/>
+<img alt="Scene 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/7qcv5y.jpg"/>
+</div>
+<p class="resume">
+                Rintarō Okabe, un autoproclamé "scientifique fou", découvre qu'il peut envoyer des messages dans le passé,
+                entraînant des effets papillon catastrophiques. Il lutte alors pour sauver ses amis en naviguant entre les lignes
+                temporelles et portant le fardeau de leurs souvenirs. Une œuvre magistrale qui explore les paradoxes temporels
+                avec une profondeur émotionnelle rare.
+            </p>
+<div class="rating" data-title="Steins;Gate">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/steins-gate/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+
+<!-- MODALES : Sports -->
+
+<!-- Modal Uma Musume -->
+<div class="modal-overlay" id="modal-UmaMusume">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Uma Musume</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/uma1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/uma2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/uma3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Dans un monde où les chevaux de course se réincarnent en filles, elles visent la gloire en participant à des courses intenses et à des concerts grandioses. Suivez leur quotidien entre efforts sportifs et moments de complicité.
+      </p>
+      <div class="rating" data-title="UmaMusume">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+<!-- MODALES : Music -->
+
+<!-- Modal Sound! Euphonium -->
+<div class="modal-overlay" id="modal-SoundEuphonium">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Sound! Euphonium</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/eupho1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/eupho2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/eupho3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Kumiko, une lycéenne un peu perdue, rejoint le club d’harmonie et y retrouve d’anciennes connaissances. Elle va alors renouer avec la musique et découvrir les défis de la compétition en orchestre.
+      </p>
+      <div class="rating" data-title="SoundEuphonium">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Wandering Witch -->
+<div class="modal-overlay" id="modal-WanderingWitch">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Wandering Witch: The Journey of Elaina</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/elaina1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/elaina2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/elaina3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Elaina, jeune sorcière accomplie, parcourt le monde à la découverte de pays étranges, de gens fascinants et d’histoires parfois joyeuses, parfois sombres. Un voyage fait de liberté, de réflexions et de magie.
+      </p>
+      <div class="rating" data-title="WanderingWitch">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal Ragna Crimson -->
+<div class="modal-overlay" id="modal-RagnaCrimson">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Ragna Crimson</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder2.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder3.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder4.jpg"/>
+      </div>
+      <p class="resume">
+        Dans un monde ravagé par les dragons, Ragna, un jeune chasseur solitaire, fait un pacte avec son futur lui-même pour obtenir une puissance inégalée. Ensemble, ils défient les lois du temps pour renverser la domination draconique.
+      </p>
+      <div class="rating" data-title="RagnaCrimson">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/ragna-crimson/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+<!-- PsychoPass Modal -->
+<div class="modal-overlay" id="modal-PsychoPass">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">PsychoPass</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/cnedbu.avif"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/1xheso.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ace6e8.jpg"/>
+</div>
+<p class="resume">
+                Dans un futur gouverné par le système Sibyl, la propension criminelle de chaque individu est mesurée en temps réel.
+                L’inspectrice Akane Tsunemori va devoir remettre en question la définition même de la justice.
+            </p>
+<div class="rating" data-title="PsychoPass">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/psycho-pass/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+
+<!-- Modal Shiunjikenokodomotachi -->
+<div class="modal-overlay" id="modal-Shiunjikenokodomotachi">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Shiunjikenokodomotachi</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder6.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder7.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder8.jpg"/>
+      </div>
+      <p class="resume">
+        Alors que leurs chemins se croisent à nouveau après une décennie, un groupe d'anciens camarades d'école affronte les douleurs du passé et ravive des sentiments qu'ils pensaient oubliés. Une histoire poignante sur l'amour, la rédemption et la jeunesse perdue.
+      </p>
+      <div class="rating" data-title="Shiunjikenokodomotachi">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+<!-- Planetes Modal -->
+<div class="modal-overlay" id="modal-Planetes">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Planetes</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/9ks78e.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/wc0tum.webp"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/iyos40.webp"/>
+</div>
+<p class="resume">
+                En 2075, la conquête spatiale bat son plein, mais elle laisse derrière elle un problème inattendu : les débris orbitaux.
+                Hachirota Hoshino, surnommé “Hachimaki”, travaille comme éboueur de l’espace dans une équipe sous-financée chargée de nettoyer les orbites terrestres.
+                Entre dangers cosmiques, ambitions personnelles et réflexions philosophiques, Planetes offre un regard mature et réaliste sur le futur de l’humanité dans l’espace.
+            </p>
+<div class="rating" data-title="Planetes">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/planetes/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Noein Modal -->
+<div class="modal-overlay" id="modal-Noein">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Noein</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/bg8693.avif"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/sf732k.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/svfry9.jpg"/>
+</div>
+<p class="resume">
+                Haruka, une jeune collégienne, se retrouve soudain poursuivie par des soldats venus d’un futur alternatif.
+                Dans un monde où plusieurs dimensions parallèles s’entrelacent, un conflit éclate entre deux futurs possibles: La’cryma,
+                qui lutte pour la survie de l’humanité, et Shangri-La, qui cherche à tout effacer.
+                Entre science-fiction, émotion et mystère, Noein explore les liens du destin et le pouvoir des choix individuels à travers les multivers.
+            </p>
+<div class="rating" data-title="Noein">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://v6.voiranime.com/anime/noein-mou-hitori-no-kimi-e/" target="_blank">🎬 Regarder sur Voir-anime</a>
+</div>
+</div>
+</div>
+<!-- Dennou Coil Modal -->
+<div class="modal-overlay" id="modal-Dennou Coil">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Dennou Coil</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/itwmpy.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/zf2e0z.webp"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/fnav4f.jpg"/>
+</div>
+<p class="resume">
+                Dans un futur proche, les lunettes de réalité augmentée font partie du quotidien.
+                Yūko Okonogi emménage dans la ville de Daikoku, haut lieu des technologies AR, et rejoint une bande d'enfants hackers qui explorent les mystères cachés dans le monde numérique superposé à la réalité.
+                Mais ce qui semblait n’être qu’un jeu révèle peu à peu des secrets enfouis, des programmes oubliés… et des dangers bien réels.
+                Dennou Coil mêle aventure, science-fiction et réflexion sur notre rapport à la technologie et à l’identité.
+            </p>
+<div class="rating" data-title="Dennou Coil">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://v6.voiranime.com/anime/dennou-coil/" target="_blank">🎬 Regarder sur Voir-anime</a>
+</div>
+</div>
+</div>
+<!-- Barakamon Modal -->
+<div class="modal-overlay" id="modal-Barakamon">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Barakamon</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/lbl701.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/cn0t3m.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/vz4hp2.png"/>
+</div>
+<p class="resume">
+                Seishū Handa, un talentueux mais impulsif calligraphe, est exilé sur une petite île après avoir frappé un critique.
+                Loin de Tokyo, il découvre un mode de vie simple, rythmé par les habitants chaleureux — et parfois envahissants — du village, en particulier la jeune Naru, une fillette pleine d'énergie.
+                Entre rires, introspection et moments touchants, Barakamon est une ode à la créativité, à l'humilité, et au bonheur qu’on trouve dans les petites choses.
+            </p>
+<div class="rating" data-title="Barakamon">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/barakamon/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- MODALES : Science-Fiction -->
+<!-- =============================== -->
+
+<!-- Modal Akudama Drive -->
+<div class="modal-overlay" id="modal-AkudamaDrive">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Akudama Drive</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_ad1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_ad2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_ad3.jpg"/>
+      </div>
+      <p class="resume">
+        Dans un Japon divisé entre Kanto et Kansai, une mission mystérieuse est confiée à un groupe de criminels notoires appelés Akudama. Alors que la situation dégénère, les frontières entre justice et crime deviennent floues.
+      </p>
+      <div class="rating" data-title="AkudamaDrive">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/akudama-drive/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Dr. Stone -->
+  <div class="modal-overlay" id="modal-DrStone">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Dr. Stone</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_ds1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_ds2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_ds3.jpg"/>
+      </div>
+      <p class="resume">
+        Senku, un lycéen passionné de science, se réveille après des milliers d'années de pétrification. Avec son savoir, il tente de reconstruire la civilisation en redécouvrant les inventions humaines une par une.
+      </p>
+      <div class="rating" data-title="DrStone">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/dr-stone/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Heavenly Delusion -->
+  <div class="modal-overlay" id="modal-HeavenlyDelusion">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Heavenly Delusion</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_hd1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_hd2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_hd3.jpg"/>
+      </div>
+      <p class="resume">
+        Alors que le monde extérieur est ravagé par des monstres, deux adolescents tentent de survivre et de comprendre leur environnement. Pendant ce temps, un établissement isole d'autres enfants dans une fausse utopie.
+      </p>
+      <div class="rating" data-title="HeavenlyDelusion">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/heavenly-delusion/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- March Comes in Like a Lion Modal -->
+<div class="modal-overlay" id="modal-MarchComesInLikeaLion">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">March Comes in Like a Lion</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/98vr53.webp"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/1ki26y.avif"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/lmtn70.jpg"/>
+</div>
+<p class="resume">
+                Rei Kiriyama, un joueur de shōgi prodige, lutte contre la solitude et ses traumatismes personnels.
+                Son parcours émotionnel mêle compétition, amitié et quête d'identité dans le Japon moderne.
+                March Comes in Like a Lion est une exploration profonde des émotions humaines et de la résilience.
+            </p>
+<div class="rating" data-title="MarchComesInLikeaLion">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/march-comes-in-like-a-lion/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- MODALES : Action -->
+<!-- =============================== -->
+
+<!-- Modal Akame ga Kill -->
+<div class="modal-overlay" id="modal-AkamegaKill">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Akame ga Kill</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_ak1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_ak2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_ak3.jpg"/>
+      </div>
+      <p class="resume">
+        Tatsumi rejoint Night Raid, un groupe d'assassins luttant contre la corruption de l'empire. Il découvre alors les sacrifices nécessaires pour renverser un système injuste.
+      </p>
+      <div class="rating" data-title="AkamegaKill">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/akame-ga-kill/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal FLCL -->
+  <div class="modal-overlay" id="modal-FLCL">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">FLCL</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_fl1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_fl2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_fl3.jpg"/>
+      </div>
+      <p class="resume">
+        Naota mène une vie ordinaire jusqu'à ce qu'une fille étrange surgisse sur sa moto et déclenche une série d’événements surréalistes. Robots géants et émotions adolescentes s'entremêlent dans un chaos visuel unique.
+      </p>
+      <div class="rating" data-title="FLCL">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/flcl/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal UQ Holder! -->
+  <div class="modal-overlay" id="modal-UQHolder">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">UQ Holder!</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_uq1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_uq2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_uq3.jpg"/>
+      </div>
+      <p class="resume">
+        Après un accident mortel, Tōta devient un vampire et rejoint une société secrète d'immortels. Ensemble, ils combattent des ennemis surnaturels tout en découvrant les secrets de l'immortalité.
+      </p>
+      <div class="rating" data-title="UQHolder">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/uq-holder/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Usagi Drop Modal -->
+<div class="modal-overlay" id="modal-UsagiDrop">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Usagi Drop</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/dlvb48.avif"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ocrnj0.png"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/95vaqk.jpe"/>
+</div>
+<p class="resume">
+                Daikichi découvre qu'il a une fille illégitime, Rin, après la mort de son grand-père.
+                Il décide de s'occuper d'elle, explorant les joies et défis de la parentalité.
+                Usagi Drop est tendre et réaliste, explorant les liens familiaux hors normes.
+            </p>
+<div class="rating" data-title="UsagiDrop">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://v6.voiranime.com/anime/usagi-drop/" target="_blank">🎬 Regarder sur Voir-anime</a>
+</div>
+</div>
+</div>
+<!-- Hyouka Modal -->
+<div class="modal-overlay" id="modal-Hyouka">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Hyouka</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/lz4ehg.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/klmc9b.avif"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ihn7qr.webp"/>
+</div>
+<p class="resume">
+                Oreki Houtarou, lycéen peu motivé, rejoint le club de littérature classique et se retrouve à résoudre plusieurs mystères.
+                Hyouka allie mystère léger et moments quotidiens avec finesse et charme.
+            </p>
+<div class="rating" data-title="Hyouka">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/hyouka/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- The Great Passage Modal -->
+<div class="modal-overlay" id="modal-TheGreatPassage">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">The Great Passage</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/bpmxhx.webp"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/wxsqb7.avif"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/47zcsm.webp"/>
+</div>
+<p class="resume">
+                Un passionné lexicographe est chargé de créer un nouveau dictionnaire. L’histoire explore la passion, la communication et la patience nécessaire pour rassembler les mots.
+                The Great Passage est un hymne à la langue et à l’amitié.
+            </p>
+<div class="rating" data-title="TheGreatPassage">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://v6.voiranime.com/anime/fune-wo-amu/" target="_blank">🎬 Regarder sur Voir-anime</a>
+</div>
+</div>
+</div>
+<!-- Made in Abyss Modal -->
+<div class="modal-overlay" id="modal-MadeInAbyss">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Made in Abyss</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/m3mque.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/nugf2y.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/8z30q8.jpg"/>
+</div>
+<p class="resume">
+                Riko est une orpheline qui rêve d'explorer l'immense gouffre appelé Abyss, rempli de reliques et de créatures mystérieuses.
+                Avec son ami robot Reg, elle s’aventure dans des profondeurs inédites, affrontant de terribles dangers.
+                Made in Abyss est une aventure fantastique mêlée d'émotions intenses.
+            </p>
+<div class="rating" data-title="MadeInAbyss">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/made-in-abyss/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- The Ancient Magus’ Bride Modal -->
+<div class="modal-overlay" id="modal-TheAncientMagusBride">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">The Ancient Magus’ Bride</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/0k22a1.avif"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/jtnja3.webp"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/30hrf0.avif"/>
+</div>
+<p class="resume">
+                Chise Hatori, une jeune fille abandonnée, est vendue à Elias Ainsworth, un mystérieux magicien.
+                Elle devient son apprentie et découvre un monde rempli de créatures magiques et de magie puissante.
+                The Ancient Magus’ Bride explore le destin et l’acceptation de soi.
+            </p>
+<div class="rating" data-title="TheAncientMagusBride">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/the-ancient-magus-bride/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Fena: Pirate Princess Modal -->
+<div class="modal-overlay" id="modal-FenaPiratePrincess">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Fena: Pirate Princess</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/h3qqy0.webp"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/86utvb.avif"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/2zyzyc.jpg"/>
+</div>
+<p class="resume">
+                Fena Houtman, orpheline élevée dans un monastère, rêve de liberté et d’aventure.
+                Elle s’échappe et se lance dans une quête pour découvrir son passé et la vérité sur les pirates.
+                Fena: Pirate Princess est une aventure épique et pleine d’émotion.
+            </p>
+<div class="rating" data-title="FenaPiratePrincess">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/fena-pirate-princess/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Grimgar Ashes and Illusions Modal -->
+<div class="modal-overlay" id="modal-GrimgarAshesAndIllusions">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Grimgar, Ashes and Illusions</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/0hjio6.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/a8edf2.avif"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ym2anq.png"/>
+</div>
+<p class="resume">
+                Un groupe de personnes amnésiques se réveille dans un monde fantastique hostile.
+                Ils doivent apprendre à survivre ensemble et à retrouver leur passé.
+                Grimgar est une exploration poignante de l’humanité et de l’entraide face à l’adversité.
+            </p>
+<div class="rating" data-title="GrimgarAshesAndIllusions">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/grimgar/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Ascendance Of A Bookworm Modal -->
+<div class="modal-overlay" id="modal-AscendanceOfABookworm">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Ascendance of a Bookworm</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/rg5v41.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/t88u8q.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/theo74.avif"/>
+</div>
+<p class="resume">
+                Une fan de livres meurt et renaît dans un monde médiéval où les livres sont rares.
+                Elle décide alors d’apporter la connaissance en créant et partageant des livres.
+                Ascendance of a Bookworm est une histoire inspirante de passion et d’ingéniosité.
+            </p>
+<div class="rating" data-title="AscendanceOfABookworm">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/ascendance-of-a-bookworm/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Paranoia Agent Modal -->
+<div class="modal-overlay" id="modal-ParanoiaAgent">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Paranoia Agent</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/1cqd62.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/j4lde7.avif"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/tb507m.webp"/>
+</div>
+<p class="resume">
+                Des attaques mystérieuses à la batte se répandent dans Tokyo, impliquant une foule de victimes et de témoins.
+                Cette série psychologique explore la folie collective, la peur et la réalité altérée.
+            </p>
+<div class="rating" data-title="ParanoiaAgent">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/paranoia-agent/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Serial Experiments Lain Modal -->
+<div class="modal-overlay" id="modal-SerialExperimentsLain">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Serial Experiments Lain</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/h8t46t.jpeg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/akb83b.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/sex0z1.webp"/>
+</div>
+<p class="resume">
+                Lain Iwakura, une lycéenne réservée, découvre un monde alternatif entre la réalité physique et le réseau informatique.
+                Cette série explore la conscience, l’identité et la relation entre l’humain et la technologie.
+            </p>
+<div class="rating" data-title="SerialExperimentsLain">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/serial-experiments-lain/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Kaiba Modal -->
+<div class="modal-overlay" id="modal-Kaiba">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Kaiba</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/sneu82.jpe"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/kleu5t.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/iu49kn.jpg"/>
+</div>
+<p class="resume">
+                Dans un monde futuriste, les mémoires peuvent être transférées d’un corps à un autre.
+                Le héros amnésique explore cette réalité fragmentée, questionnant ce qui définit la véritable identité.
+            </p>
+<div class="rating" data-title="Kaiba">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://v6.voiranime.com/anime/kaiba/" target="_blank">🎬 Regarder sur Voir-anime</a>
+</div>
+</div>
+</div>
+<!-- Texhnolyze Modal -->
+<div class="modal-overlay" id="modal-Texhnolyze">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Texhnolyze</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/k907li.webp"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/kftlfy.png"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/7aok25.webp"/>
+</div>
+<p class="resume">
+                Dans une ville souterraine ravagée, les habitants utilisent des implants cybernétiques pour survivre.
+                La série dépeint la décadence sociale et la lutte pour le pouvoir dans un monde dystopique.
+            </p>
+<div class="rating" data-title="Texhnolyze">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/texhnolyze/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Welcome to the NHK Modal -->
+<div class="modal-overlay" id="modal-WelcomeToTheNHK">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Welcome to the NHK</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/4ybqfo.webp"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/pchw9f.jpe"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/pizn69.avif"/>
+</div>
+<p class="resume">
+                Tatsuhiro Satō est un hikikomori obsédé par les théories du complot.
+                Cette série suit son combat pour sortir de son isolement et affronter la réalité.
+                Welcome to the NHK est une œuvre sombre et émouvante.
+            </p>
+<div class="rating" data-title="WelcomeToTheNHK">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/nhk-ni-youkoso/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Fruits Basket Modal -->
+<div class="modal-overlay" id="modal-FruitsBasket">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Fruits Basket</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/7ulfsz.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/es21nf.webp"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/qvom48.avif"/>
+</div>
+<p class="resume">
+                Tohru Honda découvre que sa famille d'accueil est maudite par les esprits des signes du zodiaque chinois.
+                La série explore les relations humaines, la guérison émotionnelle et le destin.
+            </p>
+<div class="rating" data-title="FruitsBasket">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/fruits-basket/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Kaguya-sama Love is War Modal -->
+<div class="modal-overlay" id="modal-KaguyaSamaLoveIsWar">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Kaguya-sama: Love is War</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/3o2cbm.webp"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/7gw9z1.webp"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/abm9s4.webp"/>
+</div>
+<p class="resume">
+                Miyuki et Kaguya, deux étudiants brillantissimes, sont trop fiers pour avouer leurs sentiments.
+                Une guerre psychologique et romantique commence pour faire céder l’autre.
+                La série mêle humour et tendresse avec brio.
+            </p>
+<div class="rating" data-title="KaguyaSamaLoveIsWar">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/kaguya-sama-love-is-war/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<!-- Bloom Into You Modal -->
+<div class="modal-overlay" id="modal-BloomIntoYou">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Bloom Into You</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/jth2ne.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/mgw6nm.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/yjmwav.webp"/>
+</div>
+<p class="resume">
+                Yuu Koito et Touko Nanami explorent leurs sentiments et identités dans un lycée.
+                Bloom Into You questionne l’amour, la découverte de soi et les relations queer avec délicatesse.
+            </p>
+<div class="rating" data-title="BloomIntoYou">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/bloom-into-you/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+
+<!-- =============================== -->
+<!-- MODALES : Fantasy -->
+<!-- =============================== -->
+
+<!-- Modal Princess Connect! Re:Dive -->
+<div class="modal-overlay" id="modal-PrincessConnect">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Princess Connect! Re:Dive</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_pc1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_pc2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_pc3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Yuuki, amnésique, est guidé par une elfe nommée Kokkoro dans un monde magique. Avec Pecorine et Karyl, ils forment une guilde et affrontent des monstres tout en découvrant les mystères de ce monde enchanteur.
+      </p>
+      <div class="rating" data-title="PrincessConnect">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/princess-connect-re-dive/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal The Case Study of Vanitas -->
+  <div class="modal-overlay" id="modal-Vanitas">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">The Case Study of Vanitas</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_vanitas1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_vanitas2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_vanitas3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Noé, un vampire, rencontre Vanitas à Paris. Ce dernier utilise un livre magique pour soigner les vampires contaminés. Leur quête de vérité les conduit à découvrir les secrets d’un monde entre lumière et ténèbres.
+      </p>
+      <div class="rating" data-title="Vanitas">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/the-case-study-of-vanitas/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal No Game No Life -->
+  <div class="modal-overlay" id="modal-NoGameNoLife">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">No Game No Life</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_ngnl1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_ngnl2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_ngnl3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Sora et Shiro, duo de joueurs imbattables, sont transportés dans un monde régi par les jeux. Ils y défient les races pour renverser le roi et atteindre la divinité suprême. L’intelligence est leur seule arme.
+      </p>
+      <div class="rating" data-title="NoGameNoLife">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/no-game-no-life/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal The Devil Is a Part-Timer -->
+  <div class="modal-overlay" id="modal-DevilPartTimer">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">The Devil Is a Part-Timer</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_dpt1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_dpt2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_dpt3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Satan, banni dans notre monde, se retrouve sans pouvoirs et doit travailler dans un fast-food. Entre rires et confrontations avec des ennemis d’autrefois, il tente de s’adapter à la vie moderne.
+      </p>
+      <div class="rating" data-title="DevilPartTimer">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/the-devil-is-a-part-timer/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+<!-- =============================== -->
+<!-- MODALES : Psychological -->
+<!-- =============================== -->
+
+<!-- Modal Death Mount Play Dead -->
+<div class="modal-overlay" id="modal-DeathMountPlayDead">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Death Mount Play Dead</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_dmpd1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_dmpd2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_dmpd3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Un puissant nécromancien se réincarne dans notre monde en tant qu’adolescent. Mais sa seconde vie ne sera pas paisible : des tueurs et des forces occultes le traquent, réveillant d’anciens instincts sombres.
+      </p>
+      <div class="rating" data-title="DeathMountPlayDead">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Wotakoi -->
+<div class="modal-overlay" id="modal-Wotakoi">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Wotakoi: Love Is Hard for Otaku</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/wotakoi1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/wotakoi2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/wotakoi3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Narumi, otaku secrète, entame une relation avec Hirotaka, gamer invétéré. Leur quotidien de geeks, entre conventions et quiproquos amoureux, déborde d’humour et de tendresse.
+      </p>
+      <div class="rating" data-title="Wotakoi">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/wotakoi/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES : Romance (suite) -->
+
+<!-- Modal Honey Lemon Soda -->
+<div class="modal-overlay" id="modal-HoneyLemonSoda">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Honey Lemon Soda</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/hls1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/hls2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/hls3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Uka, timide et isolée, entre dans un lycée où elle rencontre Kai, un garçon lumineux. Il va bouleverser son monde et lui apprendre à s’ouvrir aux autres.
+      </p>
+      <div class="rating" data-title="HoneyLemonSoda">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Oresuki -->
+  <div class="modal-overlay" id="modal-Oresuki">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Oresuki</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/oresuki1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/oresuki2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/oresuki3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Joro pense vivre une comédie romantique parfaite, jusqu’à ce que les filles qu’il aime lui demandent conseil pour séduire son meilleur ami.
+      </p>
+      <div class="rating" data-title="Oresuki">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Oreshura -->
+  <div class="modal-overlay" id="modal-Oreshura">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Oreshura</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/oreshura1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/oreshura2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/oreshura3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Eita, allergique à l’amour, est embarqué dans une fausse relation avec Masuzu, une fille populaire mais calculatrice. Un jeu dangereux commence.
+      </p>
+      <div class="rating" data-title="Oreshura">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Suite complète disponible. Souhaites-tu que je t’affiche maintenant la fin des modales (Higehiro → Sakurazou) ? -->
+
+  <!-- MODALES : Romance (finale) -->
+
+<!-- Modal Higehiro -->
+<div class="modal-overlay" id="modal-Higehiro">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Higehiro</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/hige1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/hige2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/hige3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Sayu, lycéenne fugueuse, est hébergée par Yoshida, un employé de bureau. Une relation humaine, pudique et touchante se développe entre eux au fil des jours.
+      </p>
+      <div class="rating" data-title="Higehiro">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Engage Kiss -->
+  <div class="modal-overlay" id="modal-EngageKiss">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Engage Kiss</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/ek1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/ek2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/ek3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Shu dirige une petite agence pour lutter contre des créatures démoniaques. Pris entre son ex-copine et une démone possessive, il tente de survivre à ce chaos amoureux surnaturel.
+      </p>
+      <div class="rating" data-title="EngageKiss">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Summer Pockets -->
+  <div class="modal-overlay" id="modal-SummerPockets">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Summer Pockets</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/sp1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/sp2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/sp3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Lors d’un été sur une île reculée, Hairi rencontre plusieurs filles aux passés uniques. Ensemble, ils explorent souvenirs et miracles dans un cadre idyllique.
+      </p>
+      <div class="rating" data-title="SummerPockets">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- (5 modales restantes à suivre) -->
+  
+<!-- Modal Kimi ga Shinunda Made Koi wo Shitai -->
+<div class="modal-overlay" id="modal-KimiShinuKoi">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Kimi ga Shinunda Made Koi wo Shitai</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/ksk1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/ksk2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/ksk3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Dans une arène où l’amour et la mort se côtoient, deux filles combattent côte à côte tout en nourrissant une affection tragique et sincère.
+      </p>
+      <div class="rating" data-title="KimiShinuKoi">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES : Mystery -->
+
+<!-- Modal Summertime Rendering -->
+<div class="modal-overlay" id="modal-SummertimeRendering">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Summertime Rendering</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/str1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/str2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/str3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Lorsqu’il revient sur son île natale pour des funérailles, Shinpei découvre que des phénomènes étranges menacent les habitants. Il se retrouve pris dans une boucle temporelle pour démêler ce mystère sombre.
+      </p>
+      <div class="rating" data-title="SummertimeRendering">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  
+  
+  <!-- Modal I'm in Love with the Villainess -->
+  <div class="modal-overlay" id="modal-VillainessLove">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">I'm in Love with the Villainess</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/villainess1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/villainess2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/villainess3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Réincarnée dans son jeu préféré, Rae décide de séduire Claire, la redoutable antagoniste. Un amour inattendu naît dans les couloirs d’une école magique.
+      </p>
+      <div class="rating" data-title="VillainessLove">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+<!-- MODALES : Romance (Yuri) -->
+
+<!-- Modal Citrus -->
+<div class="modal-overlay" id="modal-Citrus">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Citrus</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/citrus1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/citrus2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/citrus3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Yuzu, pétillante fashionista transférée dans un lycée strict pour filles, découvre que sa nouvelle demi-sœur n’est autre que la présidente glaciale de l’école. Leur relation va rapidement basculer entre tension, jalousie et attraction.
+      </p>
+      <div class="rating" data-title="Citrus">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Sakura Trick -->
+  <div class="modal-overlay" id="modal-SakuraTrick">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Sakura Trick</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/sakutrick1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/sakutrick2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/sakutrick3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Haruka et Yuu sont inséparables. Quand leur lycée est menacé de fermeture, elles décident de rendre leur quotidien inoubliable… en commençant par un baiser qui bouleverse tout.
+      </p>
+      <div class="rating" data-title="SakuraTrick">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Love to Lie Angle -->
+  <div class="modal-overlay" id="modal-LoveToLieAngle">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Love to Lie Angle</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/llt1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/llt2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/llt3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Natsuno emménage dans une résidence étudiante... exclusivement féminine. Bientôt, son quotidien vire au chaos affectueux avec des colocataires aux charmes multiples.
+      </p>
+      <div class="rating" data-title="LoveToLieAngle">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Trying the Knot with an Amagami Sister -->
+  <div class="modal-overlay" id="modal-AmagamiSister">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Trying the Knot with an Amagami Sister</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/amagami1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/amagami2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/amagami3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Uryuu doit devenir prêtre, mais à une condition : épouser l’une des trois sœurs du temple. Une cohabitation imprévisible débute !
+      </p>
+      <div class="rating" data-title="AmagamiSister">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Sakurazou no Pet na Kanojo -->
+  <div class="modal-overlay" id="modal-Sakurazou">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Sakurazou no Pet na Kanojo</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/saku1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/saku2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/saku3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Sorata rejoint un dortoir peuplé d’excentriques. Il y rencontre Mashiro, artiste de génie incapable de vivre seule, dont il devra s’occuper... et peut-être plus ?
+      </p>
+      <div class="rating" data-title="Sakurazou">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Terror in Resonance -->
+  <div class="modal-overlay" id="modal-TerrorInResonance">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Terror in Resonance</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_tir1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_tir2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_tir3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Deux adolescents connus sous le nom de Nine et Twelve sèment la panique à Tokyo en posant des bombes et en lançant des énigmes. Leur but n’est pas la destruction, mais un message caché au monde entier…
+      </p>
+      <div class="rating" data-title="TerrorInResonance">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/terror-in-resonance/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Death Parade -->
+  <div class="modal-overlay" id="modal-DeathParade">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Death Parade</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_dp1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_dp2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_dp3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Lorsque deux personnes meurent au même moment, elles sont envoyées dans un bar étrange tenu par Decim. Là, elles doivent jouer à des jeux qui révèlent leur véritable nature pour être jugées.
+      </p>
+      <div class="rating" data-title="DeathParade">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/death-parade/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Wonder Egg Priority -->
+  <div class="modal-overlay" id="modal-WonderEggPriority">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Wonder Egg Priority</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_wep1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_wep2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_wep3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Ai Ohto découvre un monde où elle peut sauver d'autres jeunes filles des tourments qui les ont poussées au suicide. Chaque œuf cassé libère une nouvelle âme et un nouveau combat.
+      </p>
+      <div class="rating" data-title="WonderEggPriority">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/wonder-egg-priority/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Plunderer -->
+  <div class="modal-overlay" id="modal-Plunderer">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Plunderer</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/placeholder_pl1.jpg" alt="Scene 1" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_pl2.jpg" alt="Scene 2" loading="lazy">
+        <img src="https://files.catbox.moe/placeholder_pl3.jpg" alt="Scene 3" loading="lazy">
+      </div>
+      <p class="resume">
+        Dans un monde où chaque habitant porte un compteur dictant son statut, Hina cherche le légendaire As de l’Armée Rouge. Sa quête la mène vers Licht, un homme masqué aux pouvoirs insoupçonnés.
+      </p>
+      <div class="rating" data-title="Plunderer">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="https://anime-sama.fr/catalogue/plunderer/" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES : Isekai -->
+
+<!-- Modal Outbreak Company -->
+<div class="modal-overlay" id="modal-OutbreakCompany">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Outbreak Company</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/obc1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/obc2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/obc3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Shinichi, passionné d’anime, est recruté pour exporter la culture otaku dans un autre monde. Un choc culturel entre fantasy et Japon moderne s’en suit.
+      </p>
+      <div class="rating" data-title="OutbreakCompany">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Problem Children -->
+  <div class="modal-overlay" id="modal-ProblemChildren">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Problem Children Are Coming From Another World, Aren’t They?</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/prob1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/prob2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/prob3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Trois ados aux pouvoirs extraordinaires sont envoyés dans un monde où tout se règle par des jeux. Leur arrivée change l’équilibre de ce monde fantastique.
+      </p>
+      <div class="rating" data-title="ProblemChildren">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Iceblade Sorcerer -->
+  <div class="modal-overlay" id="modal-IcebladeSorcerer">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">The Iceblade Sorcerer Shall Rule the World</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/ice1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/ice2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/ice3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Ray White, étudiant dans une prestigieuse académie magique, cache qu’il est l’Iceblade Sorcerer légendaire. Il veut une vie normale, mais son passé le rattrape.
+      </p>
+      <div class="rating" data-title="IcebladeSorcerer">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES : Isekai (suite) -->
+
+  
+  <!-- Modal The Devil Is a Part-Timer -->
+  <div class="modal-overlay" id="modal-DevilPartTimer">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">The Devil Is a Part-Timer</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/devil1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/devil2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/devil3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Satan, vaincu dans son monde, atterrit à Tokyo sans magie. Pour survivre, il doit travailler chez MgRonald's en espérant un jour regagner sa puissance.
+      </p>
+      <div class="rating" data-title="DevilPartTimer">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Tsuki ga Kirei Modal -->
+<div class="modal-overlay" id="modal-TsukiGaKirei">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Tsuki ga Kirei</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/bs77mg.webp"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/xesyfq.webp"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/hla6ic.webp"/>
+</div>
+<p class="resume">
+                Kotarou Azumi et Akane Mizuno, deux collégiens timides, naviguent leurs premiers pas en amour avec hésitations et émotions.
+                Tsuki ga Kirei est une douce et réaliste romance adolescente.
+            </p>
+<div class="rating" data-title="TsukiGaKirei">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/tsuki-ga-kirei/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+
+  <!-- Modal Mushoku Tensei -->
+  <div class="modal-overlay" id="modal-MushokuTensei">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Mushoku Tensei</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/mt1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/mt2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/mt3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Un homme raté se réincarne en bébé dans un monde magique. Il jure de ne pas gâcher sa seconde chance et de vivre pleinement cette nouvelle vie.
+      </p>
+      <div class="rating" data-title="MushokuTensei">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Re:Zero -->
+  <div class="modal-overlay" id="modal-ReZero">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Re:Zero</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/rz1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/rz2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/rz3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Subaru est transporté dans un monde fantastique. Mais chaque fois qu’il meurt, il revient à un point de sauvegarde, revivant les événements en boucle.
+      </p>
+      <div class="rating" data-title="ReZero">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Reincarnated as a Slime -->
+  <div class="modal-overlay" id="modal-Slime">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Reincarnated as a Slime</h2>
+      <div class="carousel-mini">
+        <img src="https://files.catbox.moe/slime1.jpg" alt="Scene 1">
+        <img src="https://files.catbox.moe/slime2.jpg" alt="Scene 2">
+        <img src="https://files.catbox.moe/slime3.jpg" alt="Scene 3">
+      </div>
+      <p class="resume">
+        Après avoir été tué, un homme renaît sous la forme d’un slime dans un autre monde. Grâce à ses nouvelles capacités, il bâtit une société où toutes les races coexistent.
+      </p>
+      <div class="rating" data-title="Slime">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+
+<!-- =============================== -->
+<!-- MODALES : Slice of Life -->
+<!-- =============================== -->
+
+<!-- Modal How to Become Ordinary -->
+<div class="modal-overlay" id="modal-HowToBecomeOrdinary">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">How to Become Ordinary</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_htbo1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_htbo2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_htbo3.jpg"/>
+      </div>
+      <p class="resume">
+        Miku, une élève réservée, tente de mener une vie banale après des années à être le centre d’attention. Mais les événements du quotidien et les rencontres imprévues remettent en question son désir d’« normalité ».
+      </p>
+      <div class="rating" data-title="HowToBecomeOrdinary">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Blue Archive -->
+  <div class="modal-overlay" id="modal-BlueArchive">
+    <div class="modal-fullscreen">
+      <span class="close">×</span>
+      <h2 class="modal-title">Blue Archive</h2>
+      <div class="carousel-mini">
+        <img alt="Scene 1" loading="lazy" src="https://files.catbox.moe/placeholder_ba1.jpg"/>
+        <img alt="Scene 2" loading="lazy" src="https://files.catbox.moe/placeholder_ba2.jpg"/>
+        <img alt="Scene 3" loading="lazy" src="https://files.catbox.moe/placeholder_ba3.jpg"/>
+      </div>
+      <p class="resume">
+        Dans une ville où les écoles fonctionnent comme des factions militaires, des étudiantes combattantes mènent des missions secrètes entre deux cours. De l'action, du chaos, et une touche de tendresse scolaire.
+      </p>
+      <div class="rating" data-title="BlueArchive">
+        <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+      </div>
+      <div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+      <div class="watch-link">
+        <a href="#" target="_blank">🎬 Regarder sur Anime-sama</a>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Chihayafuru Modal -->
+<div class="modal-overlay" id="modal-Chihayafuru">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">Chihayafuru</h2>
+<div class="carousel-mini">
+<img alt="Image 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/ehsuo5.jpg"/>
+<img alt="Image 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/etp2ve.jpg"/>
+<img alt="Image 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+not+found';" src="https://files.catbox.moe/wdgmn5.avif"/>
+</div>
+<p class="resume">
+                Chihaya Ayase est passionnée par le karuta, un jeu de cartes japonais.
+                Son rêve est de devenir la meilleure joueuse pour honorer un ami d'enfance.
+                Chihayafuru est une belle histoire sur la passion, la compétition et l’amitié.
+            </p>
+<div class="rating" data-title="Chihayafuru">
+<span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/chihayafuru/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div>
+<script>
+        // Global state storage
+        let animeData = {
+            viewed: new Set(),
+            ratings: new Map(),
+            stats: {
+                total: 0,
+                viewed: 0,
+                rated: 0
+            }
+        };
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAnimeData();
+            updateStats();
+            setupEventListeners();
+            addAnimationEffects();
+        });
+
+        function initializeAnimeData() {
+            const animeCards = document.querySelectorAll('.anime-card');
+            animeData.stats.total = animeCards.length;
+
+            // Load viewed from localStorage if any, else simulate demo data
+            let storedViewed = JSON.parse(localStorage.getItem('viewedAnimes') || '[]');
+            storedViewed.forEach(t => animeData.viewed.add(t));
+
+            // Load ratings from localStorage
+            animeData.ratings = new Map();
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('note-')) {
+                    const title = key.slice(5);
+                    const rating = parseInt(localStorage.getItem(key), 10);
+                    animeData.ratings.set(title, rating);
+                }
+            }
+
+            // If no viewed data, simulate some initial data (demo)
+            if (animeData.viewed.size === 0) {
+                animeData.viewed.add('Steins;Gate');
+                animeData.ratings.set('Steins;Gate', 5);
+                localStorage.setItem('viewedAnimes', JSON.stringify([...animeData.viewed]));
+                localStorage.setItem('note-Steins;Gate', '5');
+            }
+
+            // Apply initial viewed styling
+            animeCards.forEach(card => {
+                const title = card.getAttribute('data-title');
+                if (animeData.viewed.has(title)) {
+                    card.classList.add('viewed');
+                }
+            });
+
+            // Apply ratings
+            document.querySelectorAll('.rating').forEach(ratingEl => {
+                const title = ratingEl.dataset.title;
+                const ratingValue = animeData.ratings.get(title);
+                if (ratingValue) {
+                    const stars = ratingEl.querySelectorAll('span');
+                    stars.forEach(star => {
+                        if (parseInt(star.dataset.value) <= ratingValue) {
+                            star.classList.add('selected');
+                        } else {
+                            star.classList.remove('selected');
+                        }
+                        star.style.color = star.classList.contains('selected') ? '#ffd700' : '#444';
+                    });
+                }
+            });
+        }
+
+        function toggleViewed(card) {
+            const title = card.getAttribute('data-title');
+            card.classList.toggle('viewed');
+
+            if (card.classList.contains('viewed')) {
+                animeData.viewed.add(title);
+            } else {
+                animeData.viewed.delete(title);
+            }
+
+            localStorage.setItem('viewedAnimes', JSON.stringify([...animeData.viewed]));
+            updateStats();
+        }
+
+        function updateStats() {
+            animeData.stats.viewed = animeData.viewed.size;
+            animeData.stats.rated = animeData.ratings.size;
+
+            document.getElementById('totalAnimes').textContent = animeData.stats.total;
+            document.getElementById('viewedAnimes').textContent = animeData.stats.viewed;
+            document.getElementById('ratedAnimes').textContent = animeData.stats.rated;
+        }
+
+        function setupEventListeners() {
+            // See more button
+            document.querySelectorAll('.voir-plus').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const title = btn.dataset.title;
+                    const modal = document.getElementById('modal-' + title);
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        modal.classList.add('fade-in');
+                    }
+                });
+            });
+
+            // Modal close buttons
+            document.querySelectorAll('.modal-overlay .close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', () => {
+                    closeBtn.closest('.modal-overlay').style.display = 'none';
+                });
+            });
+
+            // Close modal on overlay click
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        overlay.style.display = 'none';
+                    }
+                });
+            });
+
+            // Rating system
+            document.querySelectorAll('.rating').forEach(ratingEl => {
+                const title = ratingEl.dataset.title;
+                const stars = ratingEl.querySelectorAll('span');
+
+                ratingEl.addEventListener('click', (e) => {
+                    if (e.target.dataset.value) {
+                        const clickedValue = parseInt(e.target.dataset.value);
+                        const currentValue = animeData.ratings.get(title);
+
+                        if (clickedValue === currentValue) {
+                            // Remove rating
+                            animeData.ratings.delete(title);
+                            stars.forEach(star => star.classList.remove('selected'));
+                            localStorage.removeItem('note-' + title);
+                        } else {
+                            // Set new rating
+                            animeData.ratings.set(title, clickedValue);
+                            stars.forEach(star => {
+                                star.classList.toggle('selected', parseInt(star.dataset.value) <= clickedValue);
+                            });
+                            localStorage.setItem('note-' + title, clickedValue.toString());
+                        }
+                        updateStats();
+                    }
+                });
+
+                // Hover preview on stars
+                stars.forEach(star => {
+                    star.addEventListener('mouseenter', () => {
+                        const hoverValue = parseInt(star.dataset.value);
+                        stars.forEach(s => {
+                            s.style.color = (parseInt(s.dataset.value) <= hoverValue) ? '#ffd700' : '#444';
+                        });
+                    });
+                });
+
+                ratingEl.addEventListener('mouseleave', () => {
+                    const currentRating = animeData.ratings.get(title) || 0;
+                    stars.forEach(star => {
+                        star.style.color = (parseInt(star.dataset.value) <= currentRating) ? '#ffd700' : '#444';
+                    });
+                });
+            });
+        }
+
+        function addAnimationEffects() {
+            // Progressive entry animation
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.anime-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `opacity 0.4s ease, transform 0.4s ease`;
+                observer.observe(card);
+            });
+        }
+
+        // Keyboard shortcuts - Escape to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.style.display = 'none';
+                });
+            }
+        });
+    </script>
+<div class="modal-overlay" id="modal-ThePerfectInsider">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">ThePerfectInsider</h2>
+<div class="carousel-mini"><img alt="Scene 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/xe12sq.jpg"/><img alt="Scene 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/ao7zco.png"/><img alt="Scene 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/f9qfy9.webp"/></div>
+<p class="resume">Un brillant professeur en informatique et une étudiante enquêtent sur un mystérieux meurtre commis dans un laboratoire isolé, aux côtés d’une femme assassinée.</p>
+<div class="rating" data-title="ThePerfectInsider">
+<span data-value="1">★</span>
+<span data-value="2">★</span>
+<span data-value="3">★</span>
+<span data-value="4">★</span>
+<span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/the-perfect-insider" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div><div class="modal-overlay" id="modal-ZankyouNoTerror">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">ZankyouNoTerror</h2>
+<div class="carousel-mini"><img alt="Scene 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/iv3dth.webp"/><img alt="Scene 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/0zjfeq.jpg"/><img alt="Scene 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/2uobj2.webp"/></div>
+<p class="resume">Deux adolescents surnommés Nine et Twelve déclenchent une vague d’attentats à Tokyo pour révéler un sombre secret du gouvernement et éveiller les consciences. Une lycéenne, Lisa, les aide malgré elle.</p>
+<div class="rating" data-title="ZankyouNoTerror">
+<span data-value="1">★</span>
+<span data-value="2">★</span>
+<span data-value="3">★</span>
+<span data-value="4">★</span>
+<span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/terror-in-resonance/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div><div class="modal-overlay" id="modal-UnGo">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">UnGo</h2>
+<div class="carousel-mini"><img alt="Scene 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/4x6w9o.jpg"/><img alt="Scene 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/u7efvz.jpg"/><img alt="Scene 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/2ommbp.jpg"/></div>
+<p class="resume">Dans un Japon futuriste post-guerre, le détective Shinjurou Yuki et son mystérieux partenaire Inga résolvent des affaires complexes, révélant souvent la vérité cachée derrière les mensonges officiels.</p>
+<div class="rating" data-title="UnGo">
+<span data-value="1">★</span>
+<span data-value="2">★</span>
+<span data-value="3">★</span>
+<span data-value="4">★</span>
+<span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://anime-sama.fr/catalogue/un-go/" target="_blank">🎬 Regarder sur Anime-sama</a>
+</div>
+</div>
+</div><div class="modal-overlay" id="modal-GhostHound">
+<div class="modal-fullscreen">
+<span class="close">×</span>
+<h2 class="modal-title">GhostHound</h2>
+<div class="carousel-mini"><img alt="Scene 1" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/3ohibw.avif"/><img alt="Scene 2" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/zb2d43.jpg"/><img alt="Scene 3" loading="lazy" onerror="this.src='https://via.placeholder.com/300x180?text=Image+Error'" src="https://files.catbox.moe/6pmcku.jpg"/></div>
+<p class="resume">Dans une ville rurale du Japon, trois garçons ayant chacun subi un traumatisme explorent un monde parallèle mystique appelé l’Unseen World. Ils cherchent à comprendre les événements surnaturels qui les entourent.</p>
+<div class="rating" data-title="GhostHound">
+<span data-value="1">★</span>
+<span data-value="2">★</span>
+<span data-value="3">★</span>
+<span data-value="4">★</span>
+<span data-value="5">★</span>
+</div><div class="rating-hint-mobile">(Appuyez pour noter ou modifier)</div>
+<div class="watch-link">
+<a href="https://voiranime.com/anime/ghost-hound" target="_blank">🎬 Regarder sur Voir-anime</a>
+</div>
+</div>
+</div></body>
+</html>
